@@ -1,11 +1,11 @@
 import json
 
-with open("comments.json", encoding="utf8") as f:
+with open("comments_LNDM.json", encoding="utf8") as f:
 	data = json.load(f)
 
 
 myData = []
-csvfile = open("comments.csv", "a", encoding="utf-8")
+csvfile = open("comments_LNDM.csv", "a", encoding="utf-8")
 for d in data:
 	if len(str(d["commentText"])) > 10 and d["numberOfReplies"] is not None:
 		print(str(d["numberOfReplies"]))
