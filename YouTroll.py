@@ -43,7 +43,7 @@ def insultant(txt):
     return -1000000
 
 def remerciement(txt):
-  remerciement = ["merci", "bonne continuation"]
+  remerciement = ["félicitation","merci", "bonne continuation", "bravo", "chapeau"]
   txt = txt.lower().split(" ")
   if len([value for value in remerciement if value in txt]) == 0:
     return 1
