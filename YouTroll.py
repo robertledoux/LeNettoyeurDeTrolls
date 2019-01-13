@@ -1,59 +1,58 @@
 import json
 import math
+import csv
 from pprint import pprint
 import random
 import numpy as np
 
 def nombreDeMots(txt):
-	return len(txt.split(" "))
+  return len(txt.split(" "))
 
 def longueurDuTexte(txt):
-	return len(txt)
+  return len(txt)
 
 def pontuactionAbusive(txt):
-	interrogation_complexe = txt.count("??")
-	exclamation_complexe = txt.count("!!")
-	return interrogation_complexe + exclamation_complexe + 1
+  interrogation_complexe = txt.count("??")
+  exclamation_complexe = txt.count("!!")
+  return interrogation_complexe + exclamation_complexe + 1
 
 def majusculeExcessive(txt):
-	mots = txt.split(" ")
-	compteur = 0
-	for m in mots:
-		if m.istitle():
-			compteur = compteur + 1
-	return compteur/len(mots)
+  mots = txt.split(" ")
+  compteur = 0
+  for m in mots:
+    if m.istitle():
+      compteur = compteur + 1
+  return compteur/len(mots)
 
 def respectSujet(txt):
-	sujet = "L'Informateur de La Révélation des Pyramides est notre invité. Nous le questionnons sur sa méthode de travail : comment établit-il les faits sur lesquels il se fonde ? Comment teste-t-il ses interprétations ? Sa démarche permet-elle de valider les découvertes qu'il prétend avoir faites. Le dialogue est difficile, et Jacques Grimault n'accorde que de très rares réponses à nos questions... (Du coup se pose la question : pourquoi venir dans une émission comme la nôtre si ce n'est pas pour répondre aux questions et aux critiques ?).".split(" ")
-	temp_sujet = ""
-	for s in sujet:
-		if len(s) > 3:
-			temp_sujet = temp_sujet + " " + s
-	sujet = temp_sujet.lower().split(" ")
-	txt = txt.lower().split(" ")
-	return len([value for value in sujet if value in txt])
+  sujet = "L'Informateur de La Révélation des Pyramides est notre invité. Nous le questionnons sur sa méthode de travail : comment établit-il les faits sur lesquels il se fonde ? Comment teste-t-il ses interprétations ? Sa démarche permet-elle de valider les découvertes qu'il prétend avoir faites. Le dialogue est difficile, et Jacques Grimault n'accorde que de très rares réponses à nos questions... (Du coup se pose la question : pourquoi venir dans une émission comme la nôtre si ce n'est pas pour répondre aux questions et aux critiques ?).".split(" ")
+  temp_sujet = ""
+  for s in sujet:
+    if len(s) > 3:
+      temp_sujet = temp_sujet + " " + s
+  sujet = temp_sujet.lower().split(" ")
+  txt = txt.lower().split(" ")
+  return len([value for value in sujet if value in txt])
 
 def insultant(txt):
-	insultes = ["pd", "enculé", "salope", "connard", "pédé", "salaud", "pute"]
-	txt = txt.lower().split(" ")
-	if len([value for value in insultes if value in txt]) == 0:
-		return 1
-	else:
-		return -1000000
+  insultes = ["pd", "enculé", "salope", "connard", "pédé", "salaud", "pute", "sale arabe", "sale juif", "sionniste", "agent du système", "crème d'anus"]
+  txt = txt.lower().split(" ")
+  if len([value for value in insultes if value in txt]) == 0:
+    return 1
+  else:
+    return -1000000
 
 def remerciement(txt):
-	remerciement = ["merci", "bonne continuation"]
-	txt = txt.lower().split(" ")
-	if len([value for value in remerciement if value in txt]) == 0:
-		return 1
-	else:
-		return -math.log(len([value for value in remerciement if value in txt])/len(txt))
+  remerciement = ["merci", "bonne continuation"]
+  txt = txt.lower().split(" ")
+  if len([value for value in remerciement if value in txt]) == 0:
+    return 1
+  else:
+    return -math.log(len([value for value in remerciement if value in txt])/len(txt))
 
 
-with open("comments.json", encoding="utf8") as f:
-    data = json.load(f)
-
-
+#with open("comments.json", encoding="utf8") as f:
+    #data = json.load(f)
 
 
 
@@ -63,25 +62,24 @@ X = []
 Y = []
 
 
-for d in data:
+#for d in data:
 
-	text = d["commentText"]
-	if d["numberOfReplies"] == 0:
-		d["numberOfReplies"] = 1.5
+  #text = d["commentText"]
+  #points = [nombreDeMots(text), d["likes"], longueurDuTexte(text), pontuactionAbusive(text), majusculeExcessive(text), respectSujet(text), d["numberOfReplies"], insultant(text), remerciement(text)]
+  #X.append(points)   
+  #Y.append([ans])
 
-	ans = int(input(d["commentText"] + "\n"))
-	if ans != 9:
-		points = [nombreDeMots(text), d["likes"], longueurDuTexte(text), pontuactionAbusive(text), majusculeExcessive(text), respectSujet(text), d["numberOfReplies"], insultant(text), remerciement(text)]
-		X.append(points)		
-		Y.append([ans])
-	else:
-		break
+with open('comments.csv', newline='', encoding="utf-8") as csvfile:
+  spamreader = csv.reader(csvfile, delimiter='@', quotechar='|')
+  for row in spamreader:
+    text = row[0]
 
+    points = [nombreDeMots(text), int(row[1]), longueurDuTexte(text), pontuactionAbusive(text), majusculeExcessive(text), respectSujet(text), int(row[2]), insultant(text), remerciement(text)]
+    X.append(points)
+    Y.append([int(row[3])])
 
-
-
-
-
+print(X)
+print(Y)
 # X = (hours studying, hours sleeping), y = score on test, xPredicted = 4 hours studying & 8 hours sleeping (input data for prediction)
 X = np.array(X, dtype=float)
 y = np.array(Y, dtype=float)
